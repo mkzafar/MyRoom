@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Portfolio Room</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      font-family: 'Courier New', Courier, monospace;
+      background-color: #000;
+    }
+    .room-container {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .room-image {
+      max-width: 90vw;
+      max-height: 90vh;
+      width: auto;
+      height: auto;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: -1;
+    }
+    .clickable {
+      position: absolute;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+    .clickable:hover {
+      transform: scale(1.05);
+    }
+    #pc {
+      top: 42%;
+      left: 34%;
+      width: 12%;
+      height: 18%;
+    }
+    #bulletin {
+      top: 13%;
+      left: 22%;
+      width: 5%;
+      height: 20%;
+    }
+    #phone {
+      top: 46%;
+      left: 60%;
+      width: 3%;
+      height: 15%;
+    }
+    #tools {
+      top: 20%;
+      left: 65%;
+      width: 2.5%;
+      height: 22%;
+    }
+    #pc::after,
+    #bulletin::after,
+    #phone::after,
+    #tools::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      bottom: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #0f0f0f;
+      color: #00ff00;
+      padding: 2px 6px;
+      font-size: 0.75rem;
+      white-space: nowrap;
+      border: 1px solid #00ff00;
+      border-radius: 3px;
+      opacity: 0;
+      transition: opacity 0.2s;
+      pointer-events: none;
+    }
+    #pc:hover::after,
+    #bulletin:hover::after,
+    #phone:hover::after,
+    #tools:hover::after {
+      opacity: 1;
+    }
+    .modal {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: #0f0f0f;
+      color: #00ff00;
+      padding: 0.5rem 1.5rem;
+      border: 2px solid #00ff00;
+      border-radius: 5px;
+      z-index: 1000;
+      width: 80vw;
+      max-width: 700px;
+      max-height: 80vh;
+      overflow-y: auto;
+      box-shadow: 0 0 20px #00ff00;
+      white-space: pre-wrap;
+    }
+    .modal.active {
+      display: block;
+    }
+    .modal-close {
+      position: absolute;
+      top: 8px;
+      right: 12px;
+      margin: 0;
+      cursor: pointer;
+      font-size: 1.2rem;
+      color: #00ff00;
+    }
+    .overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.8);
+      z-index: 999;
+    }
+    .overlay.active {
+      display: block;
+    }
+    #terminalContent::after {
+      content: '_';
+      animation: blink 1s infinite;
+    }
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
+    a {
+      color: #00ff00;
+      text-decoration: underline;
+    }
+    .volume-toggle {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      color: #00ff00;
+      font-size: 1.2rem;
+      cursor: pointer;
+      z-index: 1001;
+    }
+  </style>
+</head>
+<body>
+  <div class="volume-toggle" onclick="toggleVolume()">🔊</div>
+  <div class="room-container">
+    <img class="room-image" src="A_2D_digital_illustration_animated_in_a_loop_depic2.png" alt="Room Background">
+    <div id="pc" class="clickable" data-tooltip="View Coding Projects" onclick="openModal(projectsContent)"></div>
+    <div id="bulletin" class="clickable" data-tooltip="View Resume" onclick="openModal(resumeContent)" onmouseover="resumeSound.play()"></div>
+    <div id="phone" class="clickable" data-tooltip="View Contact Info" onclick="openModal(contact)" onmouseover="contactSound.play()"></div>
+    <div id="tools" class="clickable" data-tooltip="View Hardware Projects" onclick="openModal(hardwareContent)"></div>
+  </div>
+
+  <div class="overlay" id="overlay" onclick="closeModal()"></div>
+
+  <div class="modal" id="terminalModal">
+    <div class="modal-close" onclick="closeModal()">&times;</div>
+    <div id="terminalContent"></div>
+  </div>
+
+  <audio id="typingSound" src="typing.mp3" loop></audio>
+  <!-- <audio id="ambientSound" src="ambient_hum.mp3" loop autoplay></audio> -->
+  <audio id="resumeSound" src="page_flip.mp3"></audio>
+  <audio id="contactSound" src="notification_chime.mp3"></audio>
+
+  <script>
+    let volumeEnabled = true;
+
+    function toggleVolume() {
+      volumeEnabled = !volumeEnabled;
+      document.querySelectorAll('audio').forEach(audio => audio.volume = volumeEnabled ? 1 : 0);
+      document.querySelector('.volume-toggle').textContent = volumeEnabled ? '🔊' : '🔇';
+    }
+
+    const typingAudio = document.getElementById('typingSound');
+
+    function playTypingSound() {
+      if (volumeEnabled) {
+        typingAudio.currentTime = 0;
+        typingAudio.play();
+      }
+    }
+
+    function stopTypingSound() {
+      typingAudio.pause();
+      typingAudio.currentTime = 0;
+    }
+
+    const projectsContent = [
+      '> ls projects',
+      '> cd web-dev',
+      '> cat github_links.txt',
+      '> GitHub: https://github.com/mkzafar',
+      '> Details: /projects.html'
+    ];
+
+    const resumeContent = [
+      '> Resume:',
+      '> PDF: Zafar_Muhammad_Resume .pdf'
+    ];
+
+    const hardwareContent = [
+      '> Hardware Projects:',
+      '> GitHub: https://github.com/mkzafar'
+    ];
+
+    const contact = [
+      '> Contact Me:',
+      '> Linkedin: https://www.linkedin.com/in/mkzafar23/',
+      '> Email: mkzafar23@gmail.com'
+    ];
+
+    function openModal(contentLines) {
+      document.getElementById('overlay').classList.add('active');
+      const modal = document.getElementById('terminalModal');
+      const terminal = document.getElementById('terminalContent');
+      terminal.innerHTML = '';
+      modal.classList.add('active');
+
+      let fullText = contentLines.join('\n');
+      let i = 0;
+
+      playTypingSound();
+
+      function typeChar() {
+        if (i < fullText.length) {
+          terminal.innerHTML += fullText.charAt(i);
+          i++;
+          setTimeout(typeChar, 15);
+        } else {
+          stopTypingSound();
+          convertLinks();
+        }
+      }
+
+      function convertLinks() {
+        let html = terminal.innerHTML;
+        const urlRegex = /(https?:\/\/[^\s]+)/g;
+        html = html.replace(urlRegex, url => `<a href="${url}" target="_blank">${url}</a>`);
+        html = html.replace(/Zafar_Muhammad_Resume\s*\.pdf/g, '<a href="Zafar_Muhammad_Resume .pdf" target="_blank">Zafar_Muhammad_Resume .pdf</a>');
+        html = html.replace(/\/projects\.html/g, '<a href="projects.html">projects.html</a>');
+        terminal.innerHTML = html;
+      }
+
+      typeChar();
+    }
+
+    function closeModal() {
+      document.getElementById('overlay').classList.remove('active');
+      document.getElementById('terminalModal').classList.remove('active');
+    }
+  </script>
+</body>
+</html>
