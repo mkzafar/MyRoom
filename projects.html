@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Coding Projects</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    :root {
+      --bg: #1e1e1e;
+      --sidebar: #252526;
+      --border: #333;
+      --text: #d4d4d4;
+      --title: #569cd6;
+      --accent: #4fc1ff;
+      --explorer: #9cdcfe;
+      --hover: #373737;
+      --tab-active: #1a1a1a;
+      --tab-highlight: #007acc;
+    }
+
+    body.light {
+      --bg: #f3f3f3;
+      --sidebar: #e5e5e5;
+      --border: #ccc;
+      --text: #111;
+      --title: #0b4d9d;
+      --accent: #0066cc;
+      --explorer: #333;
+      --hover: #ddd;
+      --tab-active: #f3f3f3;
+    }
+
+    body {
+      margin: 0;
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: Consolas, 'Courier New', monospace;
+      display: flex;
+      height: 100vh;
+    }
+
+    .sidebar {
+      width: 260px;
+      background-color: var(--sidebar);
+      padding: 1rem 0.5rem;
+      border-right: 1px solid var(--border);
+    }
+
+    .sidebar h2 {
+      color: var(--explorer);
+      font-size: 0.9rem;
+      margin-bottom: 1rem;
+      padding-left: 0.5rem;
+    }
+
+    .file {
+      color: var(--text);
+      padding: 0.5rem 1rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.95rem;
+      transition: background-color 0.2s ease;
+    }
+
+    .file i {
+      color: var(--text);
+      width: 16px;
+      text-align: center;
+    }
+
+    .file:hover,
+    .file.active {
+      background-color: var(--hover);
+    }
+
+    .main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      background-color: var(--tab-active);
+    }
+
+    .tabs {
+      background-color: var(--sidebar);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      padding: 0.5rem 1rem;
+      gap: 0.5rem;
+      overflow-x: auto;
+    }
+
+    .tab {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px 4px 0 0;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .tab.active {
+      background: var(--tab-active);
+      border-bottom: 2px solid var(--tab-highlight);
+      font-weight: bold;
+    }
+
+    .tab i.fa-code {
+      color: orange;
+    }
+
+    .tab .close {
+      font-size: 0.85rem;
+      cursor: pointer;
+      margin-left: 0.25rem;
+    }
+
+    .toggle {
+      margin-left: auto;
+      font-size: 1.1rem;
+      color: var(--text);
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .content {
+      flex: 1;
+      padding: 2rem;
+      overflow-y: auto;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: opacity 0.3s ease, transform 0.3s ease;
+      background-color: var(--tab-active);
+    }
+
+    .content.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .project-title {
+      font-size: 1.5rem;
+      color: var(--title);
+      margin-bottom: 0.5rem;
+    }
+
+    .project-description {
+      margin-bottom: 1rem;
+    }
+
+    a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="sidebar">
+    <h2>EXPLORER</h2>
+    <div class="file" onclick="showProject('portfolio')"><i class="fas fa-file-code"></i>Personal Portfolio</div>
+    <div class="file" onclick="showProject('trading')"><i class="fas fa-robot"></i>Quantitative Trading Algorithm</div>
+    <div class="file" onclick="showProject('plant')"><i class="fas fa-seedling"></i>Automated Plant Watering System</div>
+    <div class="file" onclick="showProject('disney')"><i class="fas fa-film"></i>Disney+ Clone</div>
+    <div class="file" onclick="showProject('hackathon')"><i class="fas fa-calendar-alt"></i>HackTheNorth Event Dashboard</div>
+    <div class="file"><a href="index.html"><i class="fas fa-arrow-left"></i>&nbsp;Back to Room</a></div>
+  </div>
+
+  <div class="main">
+    <div class="tabs" id="tabs">
+      <span class="toggle" onclick="toggleTheme()" id="themeToggle">🌙</span>
+    </div>
+    <div class="content show" id="projectContent">
+      <div class="project-title">Select a project on the left</div>
+      <div class="project-description">Click a file in the sidebar to view its details.</div>
+    </div>
+  </div>
+
+  <script>
+    const projects = {
+      portfolio: {
+        title: "Personal Portfolio",
+        description: "An interactive portfolio designed as a 2D room, with clickable elements triggering terminal-style modals. Built using HTML, CSS, and JavaScript.",
+        link: "https://github.com/mkzafar"
+      },
+      trading: {
+        title: "Quantitative Trading Algorithm",
+        description: "A Python-based trading bot using historical data and machine learning indicators to make automated trades based on quantitative strategies.",
+        link: "https://github.com/mkzafar"
+      },
+      plant: {
+        title: "Automated Plant Watering System",
+        description: "A microcontroller-based hardware project that monitors soil moisture and automatically waters the plant when dry.",
+        link: "https://github.com/mkzafar"
+      },
+      disney: {
+        title: "Disney+ Clone",
+        description: "A full-stack web app mimicking the UI/UX of Disney+, built with React, Firebase Auth, and styled-components.",
+        link: "https://github.com/mkzafar"
+      },
+      hackathon: {
+        title: "HackTheNorth Event Dashboard",
+        description: "A live dashboard for hackathon organizers to track attendance, schedules, and announcements, built with Node.js and socket.io.",
+        link: "https://github.com/mkzafar"
+      }
+    };
+
+    const openTabs = new Set();
+
+    function showProject(key) {
+      const project = projects[key];
+      const container = document.getElementById('projectContent');
+      container.classList.remove('show');
+      setTimeout(() => {
+        container.innerHTML = `
+          <div class="project-title">${project.title}</div>
+          <div class="project-description">${project.description}</div>
+          <a href="${project.link}" target="_blank">View on GitHub</a>
+        `;
+        container.classList.add('show');
+      }, 100);
+
+      document.querySelectorAll('.file').forEach(el => el.classList.remove('active'));
+      const activeFile = Array.from(document.querySelectorAll('.file')).find(el => el.textContent.trim() === project.title);
+      if (activeFile) activeFile.classList.add('active');
+
+      document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+      const currentTab = document.querySelector(`.tab[data-key='${key}']`);
+      if (currentTab) currentTab.classList.add('active');
+
+      addTab(key, project.title);
+    }
+
+    function addTab(key, title) {
+      if (document.querySelector(`.tab[data-key='${key}']`)) return;
+
+      openTabs.add(key);
+      const tabsContainer = document.getElementById('tabs');
+      const tab = document.createElement('div');
+      tab.className = 'tab active';
+      tab.setAttribute('data-key', key);
+      tab.innerHTML = `<i class="fas fa-code"></i>${title}<span class="close" onclick="closeTab(event, '${key}')">&times;</span>`;
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        showProject(key);
+      });
+
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+
+      tabsContainer.insertBefore(tab, document.getElementById('themeToggle'));
+
+      tab.setAttribute('draggable', true);
+      tab.addEventListener('dragstart', e => e.dataTransfer.setData('text/plain', key));
+      tabsContainer.addEventListener('dragover', e => e.preventDefault());
+      tabsContainer.addEventListener('drop', e => {
+        e.preventDefault();
+        const draggedKey = e.dataTransfer.getData('text/plain');
+        const draggedTab = document.querySelector(`.tab[data-key='${draggedKey}']`);
+        const dropTarget = e.target.closest('.tab');
+        if (dropTarget && dropTarget !== draggedTab) {
+          tabsContainer.insertBefore(draggedTab, dropTarget.nextSibling);
+        }
+      });
+    }
+
+    function closeTab(e, key) {
+      e.stopPropagation();
+      openTabs.delete(key);
+      const tab = document.querySelector(`.tab[data-key='${key}']`);
+      if (tab) tab.remove();
+
+      const tabs = Array.from(document.querySelectorAll('.tab'));
+      if (tabs.length > 0) {
+        const newActive = tabs[tabs.length - 1];
+        newActive.classList.add('active');
+        const newKey = newActive.getAttribute('data-key');
+        if (newKey) showProject(newKey);
+      } else {
+        document.getElementById('projectContent').innerHTML = '<div class="project-title">Select a project on the left</div><div class="project-description">Click a file in the sidebar to view its details.</div>';
+      }
+    }
+
+    function toggleTheme() {
+      const isLight = document.body.classList.toggle('light');
+      document.getElementById('themeToggle').textContent = isLight ? '☀️' : '🌙';
+      localStorage.setItem('preferredTheme', isLight ? 'light' : 'dark');
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      const saved = localStorage.getItem('preferredTheme');
+      if (saved === 'light') {
+        document.body.classList.add('light');
+        document.getElementById('themeToggle').textContent = '☀️';
+      }
+    });
+  </script>
+</body>
+</html>
